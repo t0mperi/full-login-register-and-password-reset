@@ -48,6 +48,8 @@ public class SecurityConfig {
                 auth.requestMatchers("/registration**",
                                  "/forgot-password**",
                                  "/reset-password**",
+                                 "/enter-reset-code**",
+                                 "/validate-reset-code**",
                                  "/js/**",
                                  "/css/**",
                                  "/img/**",

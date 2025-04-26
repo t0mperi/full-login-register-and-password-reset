@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Enter Password Reset Code</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <h2 class="text-center mt-5 mb-4">Enter Reset Code</h2>
+
+            <!-- Success Message -->
+            <div th:if="${successMessage}" class="alert alert-info" th:text="${successMessage}"></div>
+
+            <div class="alert alert-info" role="alert">
+                A 6-digit password reset code has been sent to <strong th:text="${email}">your email</strong>. 
+                Please enter the code below. It expires in 15 minutes.
+            </div>
+
+            <form th:action="@{/validate-reset-code}" method="post" class="mt-4">
+                <!-- Hidden email field -->
+                <input type="hidden" name="email" th:value="${email}"/>
+
+                <!-- Code Input -->
+                <div class="form-group">
+                    <label for="code">Reset Code</label>
+                    <input type="text" id="code" name="code" class="form-control" placeholder="Enter 6-digit code" required autofocus pattern="\d{6}" title="Code must be 6 digits">
+                </div>
+                
+                <!-- Error Message -->
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Validate Code</button>
+                </div>
+            </form>
+            
+             <div class="text-center">
+                 <a th:href="@{/forgot-password}">Resend Code?</a> | <a th:href="@{/login}">Back to Login</a>
+             </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

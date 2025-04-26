@@ -1,6 +1,7 @@
 package com.example.loginregisterreset.repository;
 
 import com.example.loginregisterreset.entity.PasswordResetToken;
+import com.example.loginregisterreset.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +10,7 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
 
     PasswordResetToken findByToken(String token);
 
-    // Optional: Method to find token by user ID if needed later
-    // PasswordResetToken findByUserId(Long userId);
+    PasswordResetToken findByUserId(Long userId);
+
+    void deleteByUser(User user);
 }

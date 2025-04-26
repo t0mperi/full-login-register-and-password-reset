@@ -42,10 +42,10 @@ target/
 bin/
 
 # Other
-.DS_Store
 Thumbs.db
 
 
 # Sensitive configuration (Consider externalizing secrets instead of ignoring)
 src/main/resources/application.properties
+
 

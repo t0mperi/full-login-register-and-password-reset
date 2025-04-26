@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 @Entity
 public class PasswordResetToken {
 
-    private static final int EXPIRATION = 60 * 24; // 24 hours in minutes
+    private static final int EXPIRATION = 15; // Expiration time in minutes
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String token;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)

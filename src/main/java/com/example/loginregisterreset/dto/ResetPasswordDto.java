@@ -5,23 +5,12 @@ import jakarta.validation.constraints.NotEmpty;
 public class ResetPasswordDto {
 
     @NotEmpty
-    private String token;
-
-    @NotEmpty
     private String password;
 
     @NotEmpty
     private String confirmPassword;
 
     // Standard getters and setters
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public String getPassword() {
         return password;
