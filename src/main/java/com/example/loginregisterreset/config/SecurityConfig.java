@@ -57,9 +57,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated() // All other requests require authentication
             )
             .formLogin(form -> form
+                
                 .loginPage("/login") // Custom login page URL
                 .permitAll()
-                 .defaultSuccessUrl("/index", true) // Redirect to /index on successful login
+                .defaultSuccessUrl("/index", true) // Redirect to /index on successful login
             )
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))

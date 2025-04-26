@@ -1,10 +1,12 @@
 package com.example.loginregisterreset.web;
-
+import org.springframework.security.core.Authentication;
 import com.example.loginregisterreset.dto.UserRegistrationDto;
 import com.example.loginregisterreset.entity.User;
 import com.example.loginregisterreset.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,9 +30,12 @@ public class UserRegistrationController {
     public UserRegistrationDto userRegistrationDto() {
         return new UserRegistrationDto();
     }
-
     @GetMapping
-    public String showRegistrationForm() {
+    public String registration() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
+        return "redirect:/index";
+    }
         return "registration"; // Return the view name (registration.html)
     }
 
