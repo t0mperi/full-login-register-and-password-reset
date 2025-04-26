@@ -44,13 +44,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/registration**",
+            .authorizeHttpRequests(auth ->
+                auth.requestMatchers("/registration**",
                                  "/forgot-password**",
                                  "/reset-password**",
                                  "/js/**",
                                  "/css/**",
-                                 "/img/**").permitAll() // Publicly accessible paths
+                                 "/img/**",
+                                 "/api/**").permitAll() 
                 .anyRequest().authenticated() // All other requests require authentication
             )
             .formLogin(form -> form
