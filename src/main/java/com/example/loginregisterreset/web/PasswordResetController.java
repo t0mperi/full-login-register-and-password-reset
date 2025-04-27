@@ -28,10 +28,14 @@ import java.util.Random;
 @Controller
 public class PasswordResetController {
 
-    @Autowired private UserRepository userRepository;
-    @Autowired private PasswordResetTokenRepository tokenRepository;
-    @Autowired private EmailService emailService;
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordResetTokenRepository tokenRepository;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @ModelAttribute("forgotPasswordDto")
     public ForgotPasswordDto forgotPasswordDto() {
@@ -45,17 +49,17 @@ public class PasswordResetController {
 
     @PostMapping("/forgot-password")
     public String handleForgotPassword(@ModelAttribute("forgotPasswordDto") @Valid ForgotPasswordDto forgotPasswordDto,
-                                       BindingResult result,
-                                       RedirectAttributes redirectAttributes) {
-
+            BindingResult result,
+            RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "forgot-password";
         }
 
+        // Check if user exists
         User user = userRepository.findByEmail(forgotPasswordDto.getEmail());
         if (user == null) {
-            // Optionally: Show a generic message even if user not found for security
-            redirectAttributes.addFlashAttribute("successMessage", "If an account exists for this email, a password reset code has been sent.");
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "If an account exists for this email, a password reset code has been sent.");
             return "redirect:/forgot-password?success";
         }
 
@@ -63,7 +67,7 @@ public class PasswordResetController {
         Random random = new Random();
         String code = String.format("%06d", random.nextInt(999999));
 
-        // Find existing token for user and delete if present (optional, but good practice)
+        // Find existing token for user and delete if present
         PasswordResetToken existingToken = tokenRepository.findByUserId(user.getId());
         if (existingToken != null) {
             tokenRepository.delete(existingToken);
@@ -73,22 +77,24 @@ public class PasswordResetController {
         PasswordResetToken token = new PasswordResetToken(code, user);
         tokenRepository.save(token);
 
-        // Send email with the code (requires update in EmailService)
+        // Send email with the code
         try {
             emailService.sendPasswordResetCode(user.getEmail(), code);
         } catch (Exception e) {
             // Log error appropriately
             System.err.println("Failed to send password reset code email: " + e.getMessage());
-            // Inform user, maybe redirect with generic error?
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not send reset code email. Please try again later.");
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Could not send reset code email. Please try again later.");
             return "forgot-password";
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "A 6-digit password reset code has been sent to your email.");
+        redirectAttributes.addFlashAttribute("successMessage",
+                "A 6-digit password reset code has been sent to your email.");
         // Redirect to the new page, passing email
         return "redirect:/enter-reset-code?email=" + user.getEmail();
     }
 
+    // Show the reset password form
     @GetMapping("/enter-reset-code")
     public String showEnterCodeForm(@RequestParam("email") String email, Model model) {
         model.addAttribute("email", email);
@@ -98,22 +104,20 @@ public class PasswordResetController {
         }
         return "enter-reset-code";
     }
-
+    // Validate the reset code
     @PostMapping("/validate-reset-code")
     public String handleValidateCode(@RequestParam("email") String email,
-                                     @RequestParam("code") String code,
-                                     HttpServletRequest request,
-                                     RedirectAttributes redirectAttributes) {
-
+            @RequestParam("code") String code,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            // Should not happen if email came from previous step, but handle defensively
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid request.");
             return "redirect:/forgot-password";
         }
 
+        // Find the token for the user
         PasswordResetToken token = tokenRepository.findByUserId(user.getId());
-
         if (token == null || !token.getToken().equals(code) || token.isExpired()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid or expired reset code.");
             // Pass email back to the form
@@ -126,9 +130,6 @@ public class PasswordResetController {
         session.setAttribute("reset_password_email", email);
         session.setAttribute("reset_code_validated", true);
 
-        // Optionally delete the token now it's used
-        // tokenRepository.delete(token);
-
         // Redirect to the actual password reset page
         return "redirect:/reset-password";
     }
@@ -140,7 +141,8 @@ public class PasswordResetController {
         String email = (String) session.getAttribute("reset_password_email");
 
         if (validated == null || !validated || email == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid session. Please start the password reset process again.");
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Invalid session. Please start the password reset process again.");
             return "redirect:/forgot-password";
         }
 
@@ -148,20 +150,21 @@ public class PasswordResetController {
         model.addAttribute("resetPasswordDto", new ResetPasswordDto());
         return "reset-password";
     }
-
+    
     @PostMapping("/reset-password")
-    @Transactional // Keep atomicity
+    @Transactional
     public String handleResetPassword(@ModelAttribute("resetPasswordDto") @Valid ResetPasswordDto resetPasswordDto,
-                                      BindingResult result,
-                                      HttpSession session,
-                                      RedirectAttributes redirectAttributes) {
+            BindingResult result,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
         Boolean validated = (Boolean) session.getAttribute("reset_code_validated");
         String email = (String) session.getAttribute("reset_password_email");
 
         // Double-check session validity
         if (validated == null || !validated || email == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid session or session expired. Please start the password reset process again.");
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Invalid session or session expired. Please start the password reset process again.");
             return "redirect:/forgot-password";
         }
 
@@ -172,15 +175,14 @@ public class PasswordResetController {
 
         // If form has validation errors (like @NotEmpty or mismatch)
         if (result.hasErrors()) {
-            return "reset-password"; // Return to form, errors displayed by Thymeleaf
+            return "reset-password";
         }
 
         // Validation passed, update password
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            // Should not happen if email is from session, but handle defensively
             redirectAttributes.addFlashAttribute("errorMessage", "User not found. Invalid session data.");
-            session.invalidate(); // Clear potentially corrupted session
+            session.invalidate();
             return "redirect:/forgot-password";
         }
 
@@ -196,9 +198,9 @@ public class PasswordResetController {
         // Invalidate session attributes to prevent reuse
         session.removeAttribute("reset_code_validated");
         session.removeAttribute("reset_password_email");
-        // Or session.invalidate(); if preferred
 
-        redirectAttributes.addFlashAttribute("successMessage", "Your password has been successfully reset. Please login.");
+        redirectAttributes.addFlashAttribute("successMessage",
+                "Your password has been successfully reset. Please login.");
         return "redirect:/login?resetSuccess";
     }
 }

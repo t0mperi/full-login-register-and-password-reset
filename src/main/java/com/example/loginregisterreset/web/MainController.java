@@ -15,23 +15,18 @@ public class MainController {
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
             return "redirect:/index";
         }
-        return "login"; // Return the view name (login.html)
+        return "login"; 
     }
     
    
     @GetMapping("/index")
     public String home() {
-        return "index"; // Return the view name (index.html)
+        return "index"; 
     }
-
-    // Optional: Redirect root path to index if logged in, or login if not.
-    // Spring Security handles redirection to login if not authenticated for protected paths.
-    // If you want a specific landing page logic, you can add it here.
   
     @GetMapping("/")
     public String root() {
-        // Check authentication status if needed, otherwise redirect
-        return "redirect:/index"; // Or redirect:/login if you prefer
+        return "redirect:/index";  
     }
    
 }

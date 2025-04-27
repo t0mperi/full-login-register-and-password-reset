@@ -24,9 +24,6 @@ public class EmailServiceImpl implements EmailService {
         email.setTo(to);
         email.setSubject(subject);
         email.setText(message);
-        // Consider setting the 'from' address if needed/configured
-        // email.setFrom("noreply@yourdomain.com");
-
         mailSender.send(email);
     }
 
@@ -40,14 +37,13 @@ public class EmailServiceImpl implements EmailService {
                           + "This code will expire in 15 minutes.");
             mailSender.send(email);
         } catch (Exception e) {
-            // Handle exception properly - log it, maybe throw a custom exception
              System.err.println("Failed to send password reset code email: " + e.getMessage());
             throw new RuntimeException("Failed to send password reset code email", e);
         }
     }
 
+    
     private String createPasswordResetUrl(String token) {
-        // Get the current request to build the base URL
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         return baseUrl + "/reset-password?token=" + token;

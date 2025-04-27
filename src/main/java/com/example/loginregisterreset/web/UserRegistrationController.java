@@ -36,7 +36,7 @@ public class UserRegistrationController {
     if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
         return "redirect:/index";
     }
-        return "registration"; // Return the view name (registration.html)
+        return "registration";
     }
 
     @PostMapping
@@ -54,11 +54,16 @@ public class UserRegistrationController {
              result.rejectValue("confirmPassword", null, "Passwords do not match");
         }
 
+        // Check if password is strong
+        if (!registrationDto.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$")) {
+            result.rejectValue("password", null, "Password must be at least 8 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character");
+        }
+
         if (result.hasErrors()) {
-            return "registration"; // Return to registration form if errors exist
+            return "registration"; 
         }
 
         userService.save(registrationDto);
-        return "redirect:/registration?success"; // Redirect after successful registration
+        return "redirect:/registration?success"; 
     }
 }

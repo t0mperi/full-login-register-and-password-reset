@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 import java.util.HashMap;
 
+// RestApiController.java
 @RestController
 public class RestApiController {
-
     @GetMapping("/api/status")
     public Map<String, String> getStatus() {
         Map<String, String> status = new HashMap<>();

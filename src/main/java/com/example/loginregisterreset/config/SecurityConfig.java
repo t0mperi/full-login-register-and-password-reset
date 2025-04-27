@@ -20,7 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     @Autowired
-    @Lazy // Use Lazy to break potential circular dependency with UserServiceImpl
+    @Lazy
     private UserService userService;
 
     @Bean
