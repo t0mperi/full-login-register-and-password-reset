@@ -54,6 +54,7 @@ public class PasswordResetController {
         if (result.hasErrors()) {
             return "forgot-password";
         }
+     
 
         // Check if user exists
         User user = userRepository.findByEmail(forgotPasswordDto.getEmail());
@@ -115,7 +116,6 @@ public class PasswordResetController {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid request.");
             return "redirect:/forgot-password";
         }
-
         // Find the token for the user
         PasswordResetToken token = tokenRepository.findByUserId(user.getId());
         if (token == null || !token.getToken().equals(code) || token.isExpired()) {
@@ -171,6 +171,11 @@ public class PasswordResetController {
         // Check if passwords match
         if (!resetPasswordDto.getPassword().equals(resetPasswordDto.getConfirmPassword())) {
             result.rejectValue("confirmPassword", null, "Passwords do not match");
+        }
+
+        // Check if password is strong
+        if (!resetPasswordDto.getPassword().matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$")) {
+            result.rejectValue("password", null, "Password must be at least 8 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character");
         }
 
         // If form has validation errors (like @NotEmpty or mismatch)
